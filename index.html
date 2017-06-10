@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <title>Socket Bashing</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+        .container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .btn {
+            margin-bottom: 20px;
+        }
+        .logs {
+            height: 400px;
+            background-color: #eee;
+        }
+        .progress {
+            overflow: hidden;
+        }
+        #messages {
+            font-family: "Lucida Console", Monaco, monospace;
+            list-style: none;
+            text-align: left;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            $('button').click(function () {
+                socket.emit('execute');
+                $(this).attr("disabled", "none");
+            });
+            socket.on('logs', function(data){
+                $("#progress").css("width", data.donePercent + "%");
+                $('#messages').append($('<li>').text(data.data));
+            });
+            socket.on('err-logs', function(msg){
+                $('#messages').append($('<li>').text(msg));
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="col-md-6 col-md-offset-3">
+            <button type="button" class="btn btn-primary btn-md" >Execute Script</button>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="70" id="progress"
+                     aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                    <span class="sr-only"></span>
+                </div>
+            </div>
+            <div class="logs pre-scrollable">
+                <h4 style="text-align: center; padding-top: 5px; color: #ffffff">Console Output</h4>
+                <ul id="messages"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
